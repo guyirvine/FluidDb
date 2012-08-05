@@ -3,6 +3,6 @@ NServiceBus*
 out
 err
 *DS_Store*
-rservicebus-*.gem
+fluiddb-*.gem
 build
 *.xcworkspace

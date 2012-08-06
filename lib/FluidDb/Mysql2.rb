@@ -1,14 +1,19 @@
 require "FluidDb"
-require "mysql"
+require "mysql2"
 
 module FluidDb
     
-    class Mysql<Base
-        
+    class Mysql2<Base
+
         def initialize(uri)
+            host = uri.host
             database = uri.path.sub( "/", "" )
             
-            @connection = ::Mysql.new uri.host, uri.user, uri.password, database, nil, nil, ::Mysql::CLIENT_FOUND_ROWS
+            
+            @connection = ::Mysql2::Client.new(:host => uri.host,
+                                               :database => uri.path.sub( "/", "" ),
+                                               :username => uri.user,
+                                               :flags => ::Mysql2::Client::FOUND_ROWS )
         end
         
         def queryForArray( sql, params )
@@ -20,13 +25,16 @@ module FluidDb
             #    throw new Fluid_ConnectionException( $message );
             #end
             
-            case results.num_rows
+            case results.count
                 when -1
                 raise FluidDb::ConnectionError.new
                 when 0
                 raise FluidDb::NoDataFoundError.new
                 when 1
-                r = results.fetch_hash
+                r=nil;
+                results.each do |row|
+                    r=row
+                end
                 return r
                 else
                 raise FluidDb::TooManyRowsError.new
@@ -36,14 +44,14 @@ module FluidDb
         
         def queryForValue( sql, params )
             sql = self.format_to_sql( sql, params )
-            results = @connection.query(sql)
+            results = @connection.query(sql, :as => :array)
             
             #        if ( $result === false ) then
             #    $message = pg_last_error( $this->connection );
             #    throw new Fluid_ConnectionException( $message );
             #end
             
-            case results.num_rows
+            case results.count
                 when -1
                 raise FluidDb::ConnectionError.new
                 when 0
@@ -70,22 +78,21 @@ module FluidDb
             #    throw new Fluid_ConnectionException( $message );
             #end
             
-            case results.num_rows
+            case results.count
                 when -1
                 raise FluidDb::ConnectionError.new
                 else
                 list = Array.new
-                results.each_hash do |row|
+                results.each do |row|
                     list.push row
                 end
                 
                 return list
             end
         end
-
+        
         def execute( sql, params, expected_affected_rows=nil )
             sql = self.format_to_sql( sql, params )
-            #            puts "sql: #{sql}"
             @connection.query( sql );
             
             if !expected_affected_rows.nil? and
@@ -93,10 +100,11 @@ module FluidDb
                 raise ExpectedAffectedRowsError.new( "Expected affected rows, #{expected_affected_rows}, Actual affected rows, #{@connection.affected_rows}")
             end
         end
-
+        
+        
         def insert( sql, params )
             self.execute( sql, params )
-            return @connection.insert_id
+            return @connection.last_id
         end
         
     end

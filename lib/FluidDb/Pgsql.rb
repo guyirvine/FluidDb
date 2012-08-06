@@ -11,16 +11,7 @@ module FluidDb
             
             @connection = PG.connect( dbname:uri.path.sub( "/", "" ) )
         end
-        
-        def convertTupleToHash( fields, tuple, j )
-            hash = Hash.new
-            0.upto( fields.length-1 ).each do |i|
-                hash[fields[i].to_s] = tuple.getvalue(j, i)
-            end
-            
-            return hash
-        end
-        
+
         def queryForArray( sql, params )
             sql = self.format_to_sql( sql, params )
             results = @connection.exec(sql)
@@ -89,17 +80,22 @@ module FluidDb
         end
         
         
-        #    def execute( sql, params, expected_affected_rows )
-        def execute( sql, params )
+        def execute( sql, params, expected_affected_rows=nil )
             sql = self.format_to_sql( sql, params )
-            @connection.query( sql );
+            r = @connection.query( sql );
+            
+            if !expected_affected_rows.nil? and
+                r.cmd_tuples != expected_affected_rows then
+                raise ExpectedAffectedRowsError.new( "Expected affected rows, #{expected_affected_rows}, Actual affected rows, #{r.cmd_tuples}")
+            end
         end
-        
+
         def insert( sql, params )
-            self.execute( sql, params )
-            return @connection.last_id
+            raise "Pgsql uses SEQUENCES, so possibly easier to use 2 executes"
+            #            self.execute( sql, params )
+            #return @connection.last_id
         end
-        
+
     end
     
 end

@@ -11,6 +11,8 @@ module FluidDb
     end
     class ParamTypeNotSupportedError<StandardError
     end
+    class ExpectedAffectedRowsError<StandardError
+    end
     
     class Base
         
@@ -40,6 +42,15 @@ module FluidDb
             
             return sql
         end
+
+        def convertTupleToHash( fields, tuple, j )
+            hash = Hash.new
+            0.upto( fields.length-1 ).each do |i|
+                hash[fields[i].to_s] = tuple.getvalue(j, i)
+            end
+            
+            return hash
+        end        
         
         def queryForArray( sql, params )
             raise NotImplementedError.new("You must implement 'queryForArray'.")

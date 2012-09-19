@@ -4,7 +4,7 @@ require "mysql2"
 module FluidDb
     
     class Mysql2<Base
-
+        
         # Connect to Db.
         #
         # @param [String] uri a location for the resource to which we will attach, eg mysql://user:pass@127.0.0.1/foo
@@ -21,11 +21,7 @@ module FluidDb
         end
         
         def close
-            begin
-                @connection.close
-                rescue
-                puts "FluidDb::Mysql2. An error was raised while closing connection to, " + uri.to_s
-            end
+            @connection.close
         end
         
         def queryForArray( sql, params )

@@ -14,15 +14,11 @@ module FluidDb
             
             @connection = ::Mysql.new uri.host, uri.user, uri.password, database, nil, nil, ::Mysql::CLIENT_FOUND_ROWS
         end
-
+        
         def close
-            begin
-                @connection.close
-                rescue
-                puts "FluidDb::Mysql. An error was raised while closing connection to, " + uri.to_s
-            end
+            @connection.close
         end
-
+        
         def queryForArray( sql, params )
             sql = self.format_to_sql( sql, params )
             results = @connection.query(sql)

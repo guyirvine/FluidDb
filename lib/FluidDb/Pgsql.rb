@@ -15,13 +15,9 @@ module FluidDb
             
             @connection = PG.connect( dbname:uri.path.sub( "/", "" ) )
         end
-
+        
         def close
-            begin
-                @connection.close
-                rescue
-                puts "FluidDb::Pgsql. An error was raised while closing connection to, " + uri.to_s
-            end
+            @connection.close
         end
         
         def queryForArray( sql, params )
@@ -48,7 +44,7 @@ module FluidDb
         def queryForValue( sql, params )
             sql = self.format_to_sql( sql, params )
             results = @connection.exec(sql)
-
+            
             #        if ( $result === false ) then
             #    $message = pg_last_error( $this->connection );
             #    throw new Fluid_ConnectionException( $message );
@@ -76,7 +72,7 @@ module FluidDb
             #    $message = pg_last_error( $this->connection );
             #    throw new Fluid_ConnectionException( $message );
             #end
-
+            
             case results.num_tuples
                 when -1
                 raise FluidDb::ConnectionError.new
@@ -91,7 +87,7 @@ module FluidDb
             end
         end
         
-
+        
         def execute( sql, params, expected_affected_rows=nil )
             sql = self.format_to_sql( sql, params )
             r = @connection.query( sql );
@@ -101,13 +97,13 @@ module FluidDb
                 raise ExpectedAffectedRowsError.new( "Expected affected rows, #{expected_affected_rows}, Actual affected rows, #{r.cmd_tuples}")
             end
         end
-
+        
         def insert( sql, params )
             raise "Pgsql uses SEQUENCES, so possibly easier to use 2 executes"
             #            self.execute( sql, params )
             #return @connection.last_id
         end
-
+        
     end
     
 end

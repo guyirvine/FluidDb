@@ -5,7 +5,11 @@ module FluidDb
     
     class Mysql2<Base
 
-        def initialize(uri)
+        # Connect to Db.
+        #
+        # @param [String] uri a location for the resource to which we will attach, eg mysql://user:pass@127.0.0.1/foo
+        def connect()
+            uri = @uri
             host = uri.host
             database = uri.path.sub( "/", "" )
             
@@ -14,6 +18,14 @@ module FluidDb
                                                :database => uri.path.sub( "/", "" ),
                                                :username => uri.user,
                                                :flags => ::Mysql2::Client::FOUND_ROWS )
+        end
+        
+        def close
+            begin
+                @connection.close
+                rescue
+                puts "FluidDb::Mysql2. An error was raised while closing connection to, " + uri.to_s
+            end
         end
         
         def queryForArray( sql, params )

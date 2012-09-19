@@ -5,12 +5,24 @@ module FluidDb
     
     class Mysql<Base
         
-        def initialize(uri)
+        # Connect to Db.
+        #
+        # @param [String] uri a location for the resource to which we will attach, eg mysql://user:pass@127.0.0.1/foo
+        def connect()
+            uri = @uri
             database = uri.path.sub( "/", "" )
             
             @connection = ::Mysql.new uri.host, uri.user, uri.password, database, nil, nil, ::Mysql::CLIENT_FOUND_ROWS
         end
-        
+
+        def close
+            begin
+                @connection.close
+                rescue
+                puts "FluidDb::Mysql. An error was raised while closing connection to, " + uri.to_s
+            end
+        end
+
         def queryForArray( sql, params )
             sql = self.format_to_sql( sql, params )
             results = @connection.query(sql)
@@ -60,7 +72,6 @@ module FluidDb
             
         end
         
-        
         def queryForResultset( sql, params )
             sql = self.format_to_sql( sql, params )
             results = @connection.query(sql)
@@ -82,7 +93,7 @@ module FluidDb
                 return list
             end
         end
-
+        
         def execute( sql, params, expected_affected_rows=nil )
             sql = self.format_to_sql( sql, params )
             #            puts "sql: #{sql}"
@@ -93,7 +104,7 @@ module FluidDb
                 raise ExpectedAffectedRowsError.new( "Expected affected rows, #{expected_affected_rows}, Actual affected rows, #{@connection.affected_rows}")
             end
         end
-
+        
         def insert( sql, params )
             self.execute( sql, params )
             return @connection.insert_id

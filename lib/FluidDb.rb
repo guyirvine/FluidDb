@@ -49,10 +49,10 @@ module FluidDb
                     elsif v.is_a?(Numeric) then
                     sql = sql.sub( "?", v.to_s )
                     else
-                    raise FluidDb_ParamTypeNotSupportedError.new
+                    raise ParamTypeNotSupportedError.new( "Name of unknown param type, #{v.class.name}, for sql, #{sql}" )
                 end
             end
-            
+
             return sql
         end
         

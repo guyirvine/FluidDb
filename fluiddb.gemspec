@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'fluiddb'
-  s.version     = '0.0.9'
-  s.date        = '2012-10-03'
+  s.version     = '0.0.11'
+  s.date        = '2012-10-26'
   s.summary     = "FluidDB"
   s.description = "A semantic layer for db interaction"
   s.authors     = ["Guy Irvine"]

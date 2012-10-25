@@ -24,7 +24,12 @@ module FluidDb
         #
         # @param [String] uri a location for the resource to which we will attach, eg mysql://user:pass@127.0.0.1/foo
         def initialize(uri)
-            @uri = uri
+            if uri.kind_of? String then
+                @uri = Uri.parse( uri )
+            else
+                @uri = uri
+            end
+
             self.connect
         end
 

@@ -18,7 +18,7 @@ module FluidDb
         def close
             @connection.close
         end
-        
+
         def queryForArray( sql, params )
             sql = self.format_to_sql( sql, params )
             results = @connection.query(sql)

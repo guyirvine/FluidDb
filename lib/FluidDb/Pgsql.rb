@@ -28,7 +28,7 @@ module FluidDb
             #    $message = pg_last_error( $this->connection );
             #    throw new Fluid_ConnectionException( $message );
             #end
-            
+
             case results.num_tuples
                 when -1
                 raise FluidDb::ConnectionError.new

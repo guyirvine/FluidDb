@@ -2,6 +2,8 @@ require 'date'
 require 'time'
 require 'uri'
 
+require "FluidDb/Db"
+
 module FluidDb
     
     class ConnectionError<StandardError
@@ -53,6 +55,8 @@ module FluidDb
                     sql = sql.sub( "?", v.to_s )
                     elsif v.is_a?(Numeric) then
                     sql = sql.sub( "?", v.to_s )
+                    elsif v.is_nil? then
+                    sql = sql.sub( "?", 'NULL' )
                     else
                     raise ParamTypeNotSupportedError.new( "Name of unknown param type, #{v.class.name}, for sql, #{sql}" )
                 end

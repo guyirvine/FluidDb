@@ -3,6 +3,7 @@ require "FluidDb"
 module FluidDb
     
     def FluidDb.Db( uri )
+	uri = URI.parse( uri ) if uri.is_a? String
         
         case uri.scheme
             when "mysql"

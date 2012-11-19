@@ -18,9 +18,12 @@ module FluidDb
     end
     
     class Base
+
+        attr_writer :verbose
         
         @connection;
         @uri
+        @verbose
 
         # Constructor.
         #
@@ -55,12 +58,14 @@ module FluidDb
                     sql = sql.sub( "?", v.to_s )
                     elsif v.is_a?(Numeric) then
                     sql = sql.sub( "?", v.to_s )
-                    elsif v.is_nil? then
+                    elsif v.nil? then
                     sql = sql.sub( "?", 'NULL' )
                     else
                     raise ParamTypeNotSupportedError.new( "Name of unknown param type, #{v.class.name}, for sql, #{sql}" )
                 end
             end
+
+            puts sql if @verbose == true
 
             return sql
         end

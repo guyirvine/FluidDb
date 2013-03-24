@@ -40,7 +40,16 @@ class FormatSQLTest < Test::Unit::TestCase
         
         sql_out = TestFormatSQL.new.format_to_sql( sql_in, params )
         
-        assert_equal "SELECT field1, field2 FROM table1 WHERE field3 = '1\'2'", sql_out
+        assert_equal "SELECT field1, field2 FROM table1 WHERE field3 = '1''2'", sql_out
+    end
+    
+    def test_single_string_param_with_multiple_quotes
+        sql_in = "SELECT field1, field2 FROM table1 WHERE field3 = ?"
+        params = [ "1'2'3".to_s ]
+        
+        sql_out = TestFormatSQL.new.format_to_sql( sql_in, params )
+        
+        assert_equal "SELECT field1, field2 FROM table1 WHERE field3 = '1''2''3'", sql_out
     end
     
     def test_single_date_param
@@ -67,7 +76,16 @@ class FormatSQLTest < Test::Unit::TestCase
         
         sql_out = TestFormatSQL.new.format_to_sql( sql_in, params )
         
-        assert_equal "SELECT field1, field2 FROM table1 WHERE field3 = '1\'2' AND field4 = 1 OR field5 = 1.4", sql_out
+        assert_equal "SELECT field1, field2 FROM table1 WHERE field3 = '1''2' AND field4 = 1 OR field5 = 1.4", sql_out
+    end
+    
+    def test_multiple_params_with_question_mark
+        sql_in = "SELECT field1 FROM table1 WHERE field2 = ? AND field3 = ?"
+        params = [ "First?", "Second" ]
+
+        sql_out = TestFormatSQL.new.format_to_sql( sql_in, params )
+        
+        assert_equal "SELECT field1 FROM table1 WHERE field2 = 'First?' AND field3 = 'Second'", sql_out
     end
     
     def test_insert_statement
@@ -78,4 +96,5 @@ class FormatSQLTest < Test::Unit::TestCase
         
         assert_equal "UPDATE table1 SET field1=1.0, field2='2' WHERE field3=3", sql_out
     end
+    
 end

@@ -123,7 +123,7 @@ class MysqlSQLTest < Test::Unit::TestCase
     
     def test_insert
         id = @FluidDb.insert( "INSERT INTO table1 ( field1, field2 ) VALUES ( ?, ? );", [3, 'Four'] )
-        
+
         end
 
 end

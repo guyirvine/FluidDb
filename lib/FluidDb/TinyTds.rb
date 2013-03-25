@@ -27,8 +27,8 @@ module FluidDb
         
         def queryForArray( sql, params )
             sql = self.format_to_sql( sql, params )
-            results = @connection.exec(sql)
-            
+            results = @connection.execute(sql)
+
             count = 0
             tuple = ""
             results.each do |row|
@@ -45,7 +45,7 @@ module FluidDb
         
         def queryForValue( sql, params )
             sql = self.format_to_sql( sql, params )
-            results = @connection.exec(sql)
+            results = @connection.execute(sql)
             
             count = 0
             value = ""
@@ -64,7 +64,7 @@ module FluidDb
         
         def queryForResultset( sql, params )
             sql = self.format_to_sql( sql, params )
-            results = @connection.exec(sql)
+            results = @connection.execute(sql)
             
             list = Array.new
             results.each do |row|

@@ -13,7 +13,7 @@ module FluidDb
             raise "Unsupported uri. Please update freetds.conf and use format tinytds://<user>:<pass>@<dataserver>" unless uri.path == ""
             
             dataserver = uri.host
-            username = uri.user
+            username = URI.unescape( uri.user )
             password = uri.password
             
             puts "#{username}, #{password}, #{dataserver}"

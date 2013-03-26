@@ -45,7 +45,7 @@ module FluidDb
             if params.length != sql.count( "?" ) then
                 raise IncorrectNumberOfParametersError.new
             end
-            
+
             sql_out = ""
             sql.split( "?" ).each_with_index do |s,idx|
                 sql_out = sql_out + s

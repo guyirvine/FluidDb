@@ -7,18 +7,28 @@ module FluidDb
         
         # Connect to Db.
         #
-        # @param [String] uri a location for the resource to which we will attach, eg tinytds://user:pass@127.0.0.1
+        # @param [String] uri a location for the resource to which we will attach, eg tinytds://<user>:<pass>@<dataserver>/<database>
         def connect()
             uri = @uri
-            raise "Unsupported uri. Please update freetds.conf and use format tinytds://<user>:<pass>@<dataserver>" unless uri.path == ""
             
             dataserver = uri.host
+            database = uri.path.sub( "/", "" )
             username = URI.unescape( uri.user )
             password = uri.password
             
-            puts "#{username}, #{password}, #{dataserver}"
             
-            @connection = ::TinyTds::Client.new( :username => username, :password => password, :dataserver => dataserver )
+            if dataserver == "" ||
+                database == "" then
+                raise "*** You need to specify both a dataserver and a database for the tinytds driver. Expected format: tinytds://<user>:<pass>@<dataserver>/<database>\n" +
+                        "*** The specified dataserver should have an entry in /etc/freetds/freetds.conf"
+            end
+
+            if username == "" ||
+                password == "" then
+                puts "*** Warning - you will normally need to specify both a username and password for the tinytds driver to work correctly."
+            end
+            
+            @connection = ::TinyTds::Client.new( :username => username, :password => password, :database => database, :dataserver => dataserver )
         end
 
         def close

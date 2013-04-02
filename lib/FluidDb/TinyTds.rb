@@ -29,10 +29,10 @@ module FluidDb
                 puts "*** Warning - you will normally need to specify both a username and password for the tinytds driver to work correctly."
             end
             
-            hash = Hash["username", username, "password", password, "database", database, "dataserver", dataserver]
+            hash = Hash[:username, username, :password, password, :database, database, :dataserver, dataserver]
             if !uri.query.nil? then
                 cgi = CGI.parse( uri.query )
-                hash["timeout"] = cgi["timeout"][0] if cgi.has_key?( "timeout" )
+                hash[:timeout] = cgi["timeout"][0].to_i if cgi.has_key?( "timeout" )
             end
 
             @connection = ::TinyTds::Client.new( hash )

@@ -18,7 +18,9 @@ module FluidDb
     end
     class IncorrectNumberOfParametersError<StandardError
     end
-    
+    class DuplicateKeyError<StandardError
+    end
+
     class Base
         
         attr_writer :verbose

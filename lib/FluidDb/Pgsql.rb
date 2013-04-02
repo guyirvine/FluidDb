@@ -11,19 +11,24 @@ module FluidDb
         def connect()
             uri = @uri
             host = uri.host
-            database = uri.path.sub( "/", "" )
+            dbname = uri.path.sub( "/", "" )
             
-            @connection = PG.connect( dbname:uri.path.sub( "/", "" ) )
+            hash = Hash["host", host, "dbname", dbname]
+            hash["port"] = uri.port unless uri.port.nil?
+            hash["user"] = uri.user unless uri.user.nil?
+            hash["password"] = uri.password unless uri.password.nil?
+
+            @connection = PG.connect( hash )
         end
-        
+
         def close
             @connection.close
         end
-        
+
         def queryForArray( sql, params )
             sql = self.format_to_sql( sql, params )
             results = @connection.exec(sql)
-            
+
             #        if ( $result === false ) then
             #    $message = pg_last_error( $this->connection );
             #    throw new Fluid_ConnectionException( $message );
@@ -96,6 +101,10 @@ module FluidDb
                 r.cmd_tuples != expected_affected_rows then
                 raise ExpectedAffectedRowsError.new( "Expected affected rows, #{expected_affected_rows}, Actual affected rows, #{r.cmd_tuples}")
             end
+            rescue PG::Error => e
+                raise DuplicateKeyError.new( e.message ) unless e.message.index( "duplicate key value violates unique constraint" ).nil?
+            
+                raise e
         end
         
         def insert( sql, params )

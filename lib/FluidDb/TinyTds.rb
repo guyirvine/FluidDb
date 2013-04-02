@@ -1,5 +1,6 @@
 require "FluidDb"
 require "tiny_tds"
+require "cgi"
 
 module FluidDb
     
@@ -20,17 +21,23 @@ module FluidDb
             if dataserver == "" ||
                 database == "" then
                 raise "*** You need to specify both a dataserver and a database for the tinytds driver. Expected format: tinytds://<user>:<pass>@<dataserver>/<database>\n" +
-                        "*** The specified dataserver should have an entry in /etc/freetds/freetds.conf"
+                "*** The specified dataserver should have an entry in /etc/freetds/freetds.conf"
             end
-
+            
             if username == "" ||
                 password == "" then
                 puts "*** Warning - you will normally need to specify both a username and password for the tinytds driver to work correctly."
             end
             
-            @connection = ::TinyTds::Client.new( :username => username, :password => password, :database => database, :dataserver => dataserver )
-        end
+            hash = Hash["username", username, "password", password, "database", database, "dataserver", dataserver]
+            if !uri.query.nil? then
+                cgi = CGI.parse( uri.query )
+                hash["timeout"] = cgi["timeout"][0] if cgi.has_key?( "timeout" )
+            end
 
+            @connection = ::TinyTds::Client.new( hash )
+        end
+        
         def close
             @connection.close
         end
@@ -38,7 +45,7 @@ module FluidDb
         def queryForArray( sql, params )
             sql = self.format_to_sql( sql, params )
             results = @connection.execute(sql)
-
+            
             count = 0
             tuple = ""
             results.each do |row|
@@ -80,7 +87,7 @@ module FluidDb
             results.each do |row|
                 list << row
             end
-
+            
             return list
         end
         
@@ -89,13 +96,13 @@ module FluidDb
             sql = self.format_to_sql( sql, params )
             r = @connection.execute( sql );
             r.each
-
+            
             if !expected_affected_rows.nil? and
                 r.affected_rows != expected_affected_rows then
                 raise ExpectedAffectedRowsError.new( "Expected affected rows, #{expected_affected_rows}, Actual affected rows, #{r.affected_rows}")
             end
         end
-
+        
         def insert( sql, params )
             raise "Pgsql uses SEQUENCES, so possibly easier to use 2 executes"
             #            self.execute( sql, params )

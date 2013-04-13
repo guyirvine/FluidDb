@@ -16,7 +16,7 @@ module FluidDb
             database = uri.path.sub( "/", "" )
             username = URI.unescape( uri.user )
             password = uri.password
-            
+
             
             if dataserver == "" ||
                 database == "" then
@@ -42,6 +42,10 @@ module FluidDb
             @connection.close
         end
         
+        def escape_string( input )
+            return @connection.escape( input )
+        end
+
         def queryForArray( sql, params )
             sql = self.format_to_sql( sql, params )
             results = @connection.execute(sql)
@@ -77,8 +81,7 @@ module FluidDb
             
             return value
         end
-        
-        
+
         def queryForResultset( sql, params )
             sql = self.format_to_sql( sql, params )
             results = @connection.execute(sql)

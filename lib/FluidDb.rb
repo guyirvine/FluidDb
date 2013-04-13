@@ -57,6 +57,10 @@ module FluidDb
             return sql_out
         end
         
+        def escape_string( input )
+            return input.split( "'" ).join( "''" )
+        end
+        
         def format_to_sql( sql, params=nil )
             if params.nil? || params.count == 0 then
                 return sql
@@ -64,7 +68,7 @@ module FluidDb
             
             params.each_with_index do |v, idx|
                 if v.kind_of? String then
-                                        v = "'" + v.split( "'" ).join( "''" ) + "'"
+                                        v = "'" + self.escape_string( v ) + "'"
                     #                    v = "'" + v.sub( "'", "\'" ) + "'"
                     elsif v.is_a? DateTime then
                     v = "'" + v.strftime( "%Y-%m-%d %H:%M:%S" ) + "'"

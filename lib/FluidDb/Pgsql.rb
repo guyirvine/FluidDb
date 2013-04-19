@@ -94,9 +94,17 @@ module FluidDb
         
         
         def execute( sql, params, expected_affected_rows=nil )
-            sql = self.format_to_sql( sql, params )
-            r = @connection.query( sql );
+            #            sql = self.format_to_sql( sql, params )
+
+            parts = sql.split( "?" )
+            sql = ""
+            parts.each_with_index do |p,idx|
+                sql = sql + p;
+                sql = sql + "$#{idx+1}" if idx < parts.length - 1
+            end
             
+            r = @connection.exec_params( sql, params );
+
             if !expected_affected_rows.nil? and
                 r.cmd_tuples != expected_affected_rows then
                 raise ExpectedAffectedRowsError.new( "Expected affected rows, #{expected_affected_rows}, Actual affected rows, #{r.cmd_tuples}")

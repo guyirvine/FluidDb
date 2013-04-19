@@ -34,14 +34,14 @@ module FluidDb
         # @param [String] uri a location for the resource to which we will attach, eg mysql://user:pass@127.0.0.1/foo
         def initialize(uri)
             if uri.kind_of? String then
-                @uri = Uri.parse( uri )
+                @uri = URI.parse( uri )
                 else
                 @uri = uri
             end
             
             self.connect
         end
-        
+
         def splice_sql( sql, params )
             
             if params.length != sql.count( "?" ) then

@@ -24,6 +24,7 @@ module FluidDb
     class Base
         
         attr_writer :verbose
+        attr_reader :connection
         
         @connection;
         @uri
@@ -40,6 +41,12 @@ module FluidDb
             end
             
             self.connect
+            
+            @verbose = !ENV["VERBOSE"].nil?
+        end
+        
+        def verboseLog( string )
+            puts string if @verbose == true
         end
 
         def splice_sql( sql, params )
@@ -88,9 +95,11 @@ module FluidDb
             
             sql_out = self.splice_sql( sql, params )
             if @verbose == true then
+                puts self.class.name
                 puts sql
-                puts params
+                puts params.join(",")
                 puts sql_out
+                #puts "#{self.class.name}\n#{sql}\n#{params.join(',')\n#{sql_out}}"
             end
             
             return sql_out

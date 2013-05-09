@@ -94,16 +94,10 @@ module FluidDb
         
         
         def execute( sql, params, expected_affected_rows=nil )
-            #            sql = self.format_to_sql( sql, params )
-
-            parts = sql.split( "?" )
-            sql = ""
-            parts.each_with_index do |p,idx|
-                sql = sql + p;
-                sql = sql + "$#{idx+1}" if idx < parts.length - 1
-            end
+            sql = self.format_to_sql( sql, params )
             
-            r = @connection.exec_params( sql, params );
+            self.verboseLog( "#{self.class.name}.execute. #{sql}" )
+            r = @connection.exec(sql)
 
             if !expected_affected_rows.nil? and
                 r.cmd_tuples != expected_affected_rows then
@@ -113,6 +107,25 @@ module FluidDb
                 raise DuplicateKeyError.new( e.message ) unless e.message.index( "duplicate key value violates unique constraint" ).nil?
             
                 raise e
+        end
+        
+        def exec_params( sql, params, expected_affected_rows=nil )
+                        parts = sql.split( "?" )
+            sql = ""
+            parts.each_with_index do |p,idx|
+                sql = sql + p;
+                sql = sql + "$#{idx+1}" if idx < parts.length - 1
+            end
+            r = @connection.exec_params( sql, params );
+            
+            if !expected_affected_rows.nil? and
+                r.cmd_tuples != expected_affected_rows then
+                raise ExpectedAffectedRowsError.new( "Expected affected rows, #{expected_affected_rows}, Actual affected rows, #{r.cmd_tuples}")
+            end
+            rescue PG::Error => e
+            raise DuplicateKeyError.new( e.message ) unless e.message.index( "duplicate key value violates unique constraint" ).nil?
+            
+            raise e
         end
         
         def insert( sql, params )

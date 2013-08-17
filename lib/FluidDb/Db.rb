@@ -15,6 +15,9 @@ module FluidDb
             when "pgsql"
             require "FluidDb/Pgsql"
             return FluidDb::Pgsql.new( uri )
+            when "fb"
+            require "FluidDb/Firebird"
+            return FluidDb::Firebird.new( uri )
             when "mock"
             require "FluidDb/Mock"
             return FluidDb::Mock.new( uri )

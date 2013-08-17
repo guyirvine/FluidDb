@@ -1,14 +1,22 @@
 require 'test/unit'
-require './lib/FluidDb/Pgsql'
+require './lib/FluidDb/Firebird'
 
 
-class PgsqlSQLTest < Test::Unit::TestCase
+class FirebirdSQLTest < Test::Unit::TestCase
 
     def setup
-        @FluidDb = FluidDb::Pgsql.new( URI.parse( "pgsql://girvine:password@localhost/test" ) )
-        @FluidDb.execute( "DROP TABLE table1", [])
+        #        File.delete( "/tmp/test.fb" ) if File.exists?( "/tmp/test.fb" )
+        @FluidDb = FluidDb::Firebird.new( URI.parse( "fb://localhost/tmp/test.fb" ) )
+        #                begin
+        #            @FluidDb.execute( "DROP TABLE table1", [])
+        #rescue Exception => e
+        #            raise e if e.message.index( "Table TABLE1 does not exist" ).nil?
+        #end
+        begin
         @FluidDb.execute( "CREATE TABLE table1 ( field1 BIGINT, field2 VARCHAR(50) );", [])
-        
+        rescue
+        end
+        @FluidDb.execute( "DELETE FROM table1;", [])
         @FluidDb.execute( "INSERT INTO table1 ( field1, field2 ) VALUES ( 1, 'Two' );", [])
         @FluidDb.execute( "INSERT INTO table1 ( field1, field2 ) VALUES ( 2, 'Three' );", [])
     end
@@ -18,7 +26,7 @@ class PgsqlSQLTest < Test::Unit::TestCase
 
         r = @FluidDb.queryForArray( sql_in, [] )
         
-        assert_equal "{\"field1\"=>\"1\", \"field2\"=>\"Two\"}", r.to_s
+        assert_equal "{\"FIELD1\"=>1, \"FIELD2\"=>\"Two\"}", r.to_s
     end
     
     def test_queryForArrayTooManyRows
@@ -60,7 +68,7 @@ class PgsqlSQLTest < Test::Unit::TestCase
         
         resultset = @FluidDb.queryForResultset( sql_in, [0] )
         
-        assert_equal "[{\"field1\"=>\"1\", \"field2\"=>\"Two\"}, {\"field1\"=>\"2\", \"field2\"=>\"Three\"}]", resultset.to_s
+        assert_equal "[{\"FIELD1\"=>1, \"FIELD2\"=>\"Two\"}, {\"FIELD1\"=>2, \"FIELD2\"=>\"Three\"}]", resultset.to_s
         
     end
 

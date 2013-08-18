@@ -105,10 +105,10 @@ module FluidDb
                 affected_rows != expected_affected_rows then
                 raise ExpectedAffectedRowsError.new( "Expected affected rows, #{expected_affected_rows}, Actual affected rows, #{affected_rows}")
             end
-            rescue PG::Error => e
-                raise DuplicateKeyError.new( e.message ) unless e.message.index( "duplicate key value violates unique constraint" ).nil?
+#            rescue PG::Error => e
+#                raise DuplicateKeyError.new( e.message ) unless e.message.index( "duplicate key value violates unique constraint" ).nil?
             
-                raise e
+#                raise e
         end
         
         def exec_params( sql, params, expected_affected_rows=nil )
@@ -124,10 +124,10 @@ module FluidDb
                 affected_rows != expected_affected_rows then
                 raise ExpectedAffectedRowsError.new( "Expected affected rows, #{expected_affected_rows}, Actual affected rows, #{affected_rows}")
             end
-            rescue PG::Error => e
-            raise DuplicateKeyError.new( e.message ) unless e.message.index( "duplicate key value violates unique constraint" ).nil?
+#            rescue PG::Error => e
+#            raise DuplicateKeyError.new( e.message ) unless e.message.index( "duplicate key value violates unique constraint" ).nil?
             
-            raise e
+#            raise e
         end
         
         def insert( sql, params )

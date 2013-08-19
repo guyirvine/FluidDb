@@ -14,12 +14,17 @@ module FluidDb
             
             user = uri.user || "sysdba"
             password = uri.password || "masterkey"
-            
+            port = uri.port || 3050
+
+            path = uri.path
+            path = path.slice(1,uri.path.length-1) if path.slice(0,3) == "/C:"
+            path = URI.unescape( path )
+
             
             # The Database class acts as a factory for Connections.
             # It can also create and drop databases.
             db = Database.new(
-                              :database => "#{uri.host}:#{uri.path}",
+                              :database => "#{uri.host}/#{port}:#{path};",
                               :username => user,
                               :password => password)
             # :database is the only parameter without a default.

@@ -35,7 +35,11 @@ module FluidDb
                 hash[:timeout] = cgi["timeout"][0].to_i if cgi.has_key?( "timeout" )
             end
 
-            @connection = ::TinyTds::Client.new( hash )
+            @connection = ::TinyTds::Client.new( hash )            
+            
+            if !@connection.active? then
+                raise "Unable to connect to the database"
+            end
         end
         
         def close

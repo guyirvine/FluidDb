@@ -24,7 +24,7 @@ module FluidDb
             # The Database class acts as a factory for Connections.
             # It can also create and drop databases.
             db = Database.new(
-                              :database => "#{uri.host}/#{port}:#{path};",
+                              :database => "#{uri.host}/#{port}:#{path}",
                               :username => user,
                               :password => password)
             # :database is the only parameter without a default.

@@ -21,6 +21,10 @@ module FluidDb
             when "mock"
             require "FluidDb/Mock"
             return FluidDb::Mock.new( uri )
+            when "tinytds"
+            require "FluidDb/TinyTds"
+            return FluidDb::TinyTds.new( uri )
+
             else
             abort("Scheme, #{uri.scheme}, not recognised when configuring creating db connection");
         end

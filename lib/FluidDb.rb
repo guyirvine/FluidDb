@@ -159,6 +159,21 @@ module FluidDb
         def execute( sql, params, expected_affected_rows )
             raise NotImplementedError.new("You must implement 'execute'.")
         end
+
+        # Transaction Semantics
+        def Begin
+            @connection.execute( "BEGIN", [] )
+        end
+
+        # Transaction Semantics
+        def Commit
+            @connection.execute( "COMMIT", [] )
+        end
+
+        # Transaction Semantics
+        def Rollback
+            @connection.execute( "ROLLBACK", [] )
+        end
         
     end
     

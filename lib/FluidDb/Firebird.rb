@@ -140,6 +140,22 @@ module FluidDb
             #            self.execute( sql, params )
             #return @connection.last_id
         end
+
+        # Transaction Semantics
+        def Begin
+            @connection.connection.transaction()
+        end
+
+        # Transaction Semantics
+        def Commit
+            @connection.connection.commit()
+        end
+
+        # Transaction Semantics
+        def Rollback
+            @connection.connection.rollback()
+        end
+        
         
     end
     

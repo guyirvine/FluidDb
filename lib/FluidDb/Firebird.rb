@@ -143,17 +143,17 @@ module FluidDb
 
         # Transaction Semantics
         def Begin
-            @connection.connection.transaction()
+            @connection.transaction()
         end
 
         # Transaction Semantics
         def Commit
-            @connection.connection.commit()
+            @connection.commit()
         end
 
         # Transaction Semantics
         def Rollback
-            @connection.connection.rollback()
+            @connection.rollback()
         end
         
         

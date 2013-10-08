@@ -86,9 +86,9 @@ module FluidDb
                 elsif v.is_a? Numeric then
                     v = v.to_s
                 elsif v.is_a? TrueClass then
-                    v = 1
+                    v = "true"
                 elsif v.is_a? FalseClass then
-                    v = 0
+                    v = "false"
                 elsif v.nil? then
                     v = 'NULL'
                 else

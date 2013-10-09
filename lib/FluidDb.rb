@@ -75,19 +75,23 @@ module FluidDb
             
             params.each_with_index do |v, idx|
                 if v.kind_of? String then
-                                        v = "'" + self.escape_string( v ) + "'"
-                    #                    v = "'" + v.sub( "'", "\'" ) + "'"
-                    elsif v.is_a? DateTime then
+                    v = "'" + self.escape_string( v ) + "'"
+                    #v = "'" + v.sub( "'", "\'" ) + "'"
+                elsif v.is_a? DateTime then
                     v = "'" + v.strftime( "%Y-%m-%d %H:%M:%S" ) + "'"
-                    elsif v.is_a? Time then
+                elsif v.is_a? Time then
                     v = "'" + v.strftime( "%Y-%m-%d %H:%M:%S" ) + "'"
-                    elsif v.kind_of? Date then
+                elsif v.kind_of? Date then
                     v = "'" + v.to_s + "'"
-                    elsif v.is_a?(Numeric) then
+                elsif v.is_a? Numeric then
                     v = v.to_s
-                    elsif v.nil? then
+                elsif v.is_a? TrueClass then
+                    v = "true"
+                elsif v.is_a? FalseClass then
+                    v = "false"
+                elsif v.nil? then
                     v = 'NULL'
-                    else
+                else
                     raise ParamTypeNotSupportedError.new( "Name of unknown param type, #{v.class.name}, for sql, #{sql}" )
                 end
                 params[idx] = v

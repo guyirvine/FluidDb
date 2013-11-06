@@ -78,9 +78,9 @@ module FluidDb
                     v = "'" + self.escape_string( v ) + "'"
                     #v = "'" + v.sub( "'", "\'" ) + "'"
                 elsif v.is_a? DateTime then
-                    v = "'" + v.strftime( "%Y-%m-%d %H:%M:%S" ) + "'"
+                    v = "'" + v.strftime( "%Y-%m-%d %H:%M:%S.%6N %z" ) + "'"
                 elsif v.is_a? Time then
-                    v = "'" + v.strftime( "%Y-%m-%d %H:%M:%S" ) + "'"
+                    v = "'" + v.strftime( "%Y-%m-%d %H:%M:%S.%6N %z" ) + "'"
                 elsif v.kind_of? Date then
                     v = "'" + v.to_s + "'"
                 elsif v.is_a? Numeric then

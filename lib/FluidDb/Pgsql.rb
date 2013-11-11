@@ -25,7 +25,7 @@ module FluidDb
             @connection.close
         end
 
-        def queryForArray( sql, params )
+        def queryForArray( sql, params=[] )
             sql = self.format_to_sql( sql, params )
             results = @connection.exec(sql)
 
@@ -46,7 +46,7 @@ module FluidDb
             end
         end
         
-        def queryForValue( sql, params )
+        def queryForValue( sql, params=[] )
             sql = self.format_to_sql( sql, params )
             results = @connection.exec(sql)
             
@@ -69,7 +69,7 @@ module FluidDb
         end
         
         
-        def queryForResultset( sql, params )
+        def queryForResultset( sql, params=[] )
             sql = self.format_to_sql( sql, params )
             results = @connection.exec(sql)
             
@@ -93,7 +93,7 @@ module FluidDb
         end
         
         
-        def execute( sql, params, expected_affected_rows=nil )
+        def execute( sql, params=[], expected_affected_rows=nil )
             sql = self.format_to_sql( sql, params )
             
             self.verboseLog( "#{self.class.name}.execute. #{sql}" )
@@ -109,7 +109,7 @@ module FluidDb
                 raise e
         end
         
-        def exec_params( sql, params, expected_affected_rows=nil )
+        def exec_params( sql, params=[], expected_affected_rows=nil )
                         parts = sql.split( "?" )
             sql = ""
             parts.each_with_index do |p,idx|

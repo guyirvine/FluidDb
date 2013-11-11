@@ -19,7 +19,7 @@ module FluidDb
             @connection.close
         end
 
-        def queryForArray( sql, params )
+        def queryForArray( sql, params=[] )
             sql = self.format_to_sql( sql, params )
             results = @connection.query(sql)
             
@@ -42,7 +42,7 @@ module FluidDb
             
         end
         
-        def queryForValue( sql, params )
+        def queryForValue( sql, params=[] )
             sql = self.format_to_sql( sql, params )
             results = @connection.query(sql)
             
@@ -68,7 +68,7 @@ module FluidDb
             
         end
         
-        def queryForResultset( sql, params )
+        def queryForResultset( sql, params=[] )
             sql = self.format_to_sql( sql, params )
             results = @connection.query(sql)
             
@@ -90,7 +90,7 @@ module FluidDb
             end
         end
         
-        def execute( sql, params, expected_affected_rows=nil )
+        def execute( sql, params=[], expected_affected_rows=nil )
             sql = self.format_to_sql( sql, params )
             #            puts "sql: #{sql}"
             @connection.query( sql );

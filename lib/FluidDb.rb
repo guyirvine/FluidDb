@@ -78,9 +78,9 @@ module FluidDb
                     v = "'" + self.escape_string( v ) + "'"
                     #v = "'" + v.sub( "'", "\'" ) + "'"
                 elsif v.is_a? DateTime then
-                    v = "'" + v.strftime( "%Y-%m-%d %H:%M:%S" ) + "'"
+                    v = "'" + v.strftime( "%Y-%m-%d %H:%M:%S.%6N %z" ) + "'"
                 elsif v.is_a? Time then
-                    v = "'" + v.strftime( "%Y-%m-%d %H:%M:%S" ) + "'"
+                    v = "'" + v.strftime( "%Y-%m-%d %H:%M:%S.%6N %z" ) + "'"
                 elsif v.kind_of? Date then
                     v = "'" + v.to_s + "'"
                 elsif v.is_a? Numeric then
@@ -162,6 +162,21 @@ module FluidDb
         # @param [String] expected_affected_rows The number of rows that should have been updated.
         def execute( sql, params, expected_affected_rows )
             raise NotImplementedError.new("You must implement 'execute'.")
+        end
+
+        # Transaction Semantics
+        def Begin
+            @connection.execute( "BEGIN", [] )
+        end
+
+        # Transaction Semantics
+        def Commit
+            @connection.execute( "COMMIT", [] )
+        end
+
+        # Transaction Semantics
+        def Rollback
+            @connection.execute( "ROLLBACK", [] )
         end
         
     end

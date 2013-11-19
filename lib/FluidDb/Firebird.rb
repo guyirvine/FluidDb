@@ -14,12 +14,17 @@ module FluidDb
             
             user = uri.user || "sysdba"
             password = uri.password || "masterkey"
-            
+            port = uri.port || 3050
+
+            path = uri.path
+            path = path.slice(1,uri.path.length-1) if path.slice(0,3) == "/C:"
+            path = URI.unescape( path )
+
             
             # The Database class acts as a factory for Connections.
             # It can also create and drop databases.
             db = Database.new(
-                              :database => "#{uri.host}:#{uri.path}",
+                              :database => "#{uri.host}/#{port}:#{path}",
                               :username => user,
                               :password => password)
             # :database is the only parameter without a default.
@@ -32,7 +37,7 @@ module FluidDb
             @connection.close
         end
 
-        def queryForArray( sql, params )
+        def queryForArray( sql, params=[] )
             sql = self.format_to_sql( sql, params )
             list = @connection.query(:hash, sql)
 
@@ -53,7 +58,7 @@ module FluidDb
             end
         end
         
-        def queryForValue( sql, params )
+        def queryForValue( sql, params=[] )
             sql = self.format_to_sql( sql, params )
             results = @connection.query(sql)
             
@@ -76,7 +81,7 @@ module FluidDb
         end
         
         
-        def queryForResultset( sql, params )
+        def queryForResultset( sql, params=[] )
             sql = self.format_to_sql( sql, params )
             list = @connection.query(:hash, sql)
             
@@ -95,7 +100,7 @@ module FluidDb
         end
         
         
-        def execute( sql, params, expected_affected_rows=nil )
+        def execute( sql, params=[], expected_affected_rows=nil )
             sql = self.format_to_sql( sql, params )
             
             self.verboseLog( "#{self.class.name}.execute. #{sql}" )
@@ -135,6 +140,22 @@ module FluidDb
             #            self.execute( sql, params )
             #return @connection.last_id
         end
+
+        # Transaction Semantics
+        def Begin
+            @connection.transaction()
+        end
+
+        # Transaction Semantics
+        def Commit
+            @connection.commit()
+        end
+
+        # Transaction Semantics
+        def Rollback
+            @connection.rollback()
+        end
+        
         
     end
     

@@ -132,7 +132,7 @@ module FluidDb
         end
         
         # Return a single row from the database, given the sql parameter.
-        # Throwa an error for no data.
+        # Throws an error for no data.
         # Throws an error for more than 1 row
         #
         # @param [String] sql The SELECT statement to run
@@ -142,7 +142,7 @@ module FluidDb
         end
         
         # Return a single value is returned from a single row from the database, given the sql parameter.
-        # Throwa an error for no data.
+        # Throws an error for no data.
         # Throws an error for more than 1 row
         #
         # @param [String] sql The SELECT statement to run

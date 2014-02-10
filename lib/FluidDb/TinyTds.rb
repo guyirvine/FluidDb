@@ -11,7 +11,7 @@ module FluidDb
         # @param [String] uri a location for the resource to which we will attach, eg tinytds://<user>:<pass>@<dataserver>/<database>
         def connect()
             uri = @uri
-            
+
             dataserver = uri.host
             database = uri.path.sub( "/", "" )
             username = URI.unescape( uri.user )
@@ -30,16 +30,34 @@ module FluidDb
             end
             
             hash = Hash[:username, username, :password, password, :database, database, :dataserver, dataserver]
+            failOverDataServer = nil
             if !uri.query.nil? then
                 cgi = CGI.parse( uri.query )
                 hash[:timeout] = cgi["timeout"][0].to_i if cgi.has_key?( "timeout" )
+                
+                failOverDataServer = cgi["failoverdataserver"][0] if cgi.has_key?( "failoverdataserver" )
             end
 
-            @connection = ::TinyTds::Client.new( hash )            
+            begin
+                @connection = ::TinyTds::Client.new( hash )
+                rescue ::TinyTds::Error=>e
+            #Message for an incorrect password,
+                #Login failed. The login is from an untrusted domain and cannot be used with Windows authentication.
+            #Message for unavailable db
+                #Cannot open user default database. Login failed.
+                if e.message == "Cannot open user default database. Login failed." &&
+                    !failOverDataServer.nil? then
+                    hash[:dataserver] = failOverDataServer
+                    @connection = ::TinyTds::Client.new( hash )
+                else
+                    raise e
+                end
+            end
             
             if !@connection.active? then
                 raise "Unable to connect to the database"
             end
+            
         end
         
         def close

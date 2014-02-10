@@ -4,10 +4,11 @@ module FluidDb
     
     #A constant way of enabling testing for FluidDb
     class Mock<Base
+        attr_reader :hash
         
         @verbose = false
         
-        def initialize
+        def initialize(uri)
             @hash = Hash.new
             
         end

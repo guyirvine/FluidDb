@@ -17,23 +17,23 @@ module FluidDb
             hash["port"] = uri.port unless uri.port.nil?
             hash["user"] = uri.user unless uri.user.nil?
             hash["password"] = uri.password unless uri.password.nil?
-
+            
             @connection = PG.connect( hash )
         end
-
+        
         def close
             @connection.close
         end
-
+        
         def queryForArray( sql, params=[] )
             sql = self.format_to_sql( sql, params )
             results = @connection.exec(sql)
-
+            
             #        if ( $result === false ) then
             #    $message = pg_last_error( $this->connection );
             #    throw new Fluid_ConnectionException( $message );
             #end
-
+            
             case results.num_tuples
                 when -1
                 raise FluidDb::ConnectionError.new
@@ -98,19 +98,19 @@ module FluidDb
             
             self.verboseLog( "#{self.class.name}.execute. #{sql}" )
             r = @connection.exec(sql)
-
+            
             if !expected_affected_rows.nil? and
                 r.cmd_tuples != expected_affected_rows then
                 raise ExpectedAffectedRowsError.new( "Expected affected rows, #{expected_affected_rows}, Actual affected rows, #{r.cmd_tuples}")
             end
             rescue PG::Error => e
-                raise DuplicateKeyError.new( e.message ) unless e.message.index( "duplicate key value violates unique constraint" ).nil?
+            raise DuplicateKeyError.new( e.message ) unless e.message.index( "duplicate key value violates unique constraint" ).nil?
             
-                raise e
+            raise e
         end
         
         def exec_params( sql, params=[], expected_affected_rows=nil )
-                        parts = sql.split( "?" )
+            parts = sql.split( "?" )
             sql = ""
             parts.each_with_index do |p,idx|
                 sql = sql + p;
@@ -126,6 +126,21 @@ module FluidDb
             raise DuplicateKeyError.new( e.message ) unless e.message.index( "duplicate key value violates unique constraint" ).nil?
             
             raise e
+        end
+        
+        # Transaction Semantics
+        def Begin
+            @connection.exec( "BEGIN", [] )
+        end
+        
+        # Transaction Semantics
+        def Commit
+            @connection.exec( "COMMIT", [] )
+        end
+        
+        # Transaction Semantics
+        def Rollback
+            @connection.exec( "ROLLBACK", [] )
         end
         
         def insert( sql, params )

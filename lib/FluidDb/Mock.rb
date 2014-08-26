@@ -2,6 +2,10 @@ require "FluidDb"
 
 module FluidDb
     
+class SqlNotMatchedError<StandardError
+end
+
+
     #A constant way of enabling testing for FluidDb
     class Mock<Base
         attr_reader :hash
@@ -23,12 +27,18 @@ module FluidDb
         
         def close
         end
+
+	def getSqlFromHash( sql )
+		raise SqlNotMatchedError.new( sql ) unless @hash.has_key?( sql )
+
+		return @hash[sql]
+	end
         
         def queryForArray( sql, params=[] )
             sql = self.format_to_sql( sql, params )
             puts "FluidDb::Mock.queryForArray. sql: #{sql}" if @verbose == true
             
-            results = @hash[sql]
+            results = self.getSqlFromHash( sql )
             case results.length
                 when 0
                 raise FluidDb::NoDataFoundError.new
@@ -45,7 +55,7 @@ module FluidDb
             sql = self.format_to_sql( sql, params )
             puts "FluidDb::Mock.queryForValue. sql: #{sql}" if @verbose == true
             
-            results = @hash[sql]
+            results = self.getSqlFromHash( sql )
             case results.length
                 when 0
                 raise FluidDb::NoDataFoundError.new
@@ -60,13 +70,13 @@ module FluidDb
         def queryForResultset( sql, params=[] )
             sql = self.format_to_sql( sql, params )
             puts "FluidDb::Mock.queryForResultset. sql: #{sql}" if @verbose == true
-            return @hash[sql]
+            return self.getSqlFromHash( sql )
         end
         
         def execute( sql, params=[], expected_affected_rows=nil )
             sql = self.format_to_sql( sql, params )
             puts "FluidDb::Mock.execute. sql: #{sql}" if @verbose == true
-            return @hash[sql]
+            return self.getSqlFromHash( sql )
         end
         
         def insert( sql, params )
@@ -85,6 +95,18 @@ module FluidDb
             sql = self.format_to_sql( sql, params )
             
             self.addSql( sql, result )
+        end
+
+        # Transaction Semantics
+        def Begin
+        end
+
+        # Transaction Semantics
+        def Commit
+        end
+
+        # Transaction Semantics
+        def Rollback
         end
         
     end
